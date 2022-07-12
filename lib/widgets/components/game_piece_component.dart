@@ -4,16 +4,18 @@ import '/models/game_piece_model.dart';
 
 class GamePieceFieldComponent extends StatefulWidget {
   final GamePiece gamePiece;
-  final double width;
   final bool activePlayer;
   final int levelSize;
+  final double gamePieceWidth;
+  final Function onTap;
 
   const GamePieceFieldComponent({
     Key? key,
     required this.gamePiece,
-    required this.width,
     required this.activePlayer,
     required this.levelSize,
+    required this.gamePieceWidth,
+    required this.onTap,
   }) : super(key: key);
 
   @override
@@ -21,24 +23,17 @@ class GamePieceFieldComponent extends StatefulWidget {
 }
 
 class _GamePieceFieldComponentState extends State<GamePieceFieldComponent> {
-  void selectField() {
-    setState(() {
-      widget.gamePiece.isSelected = !widget.gamePiece.isSelected;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
         decoration: BoxDecoration(
           color: widget.gamePiece.isSelected ? Colors.cyanAccent : Colors.transparent,
-          border: Border.all(
-              color: widget.activePlayer ? Colors.cyanAccent : Colors.black, width: widget.activePlayer ? 2.0 : 1.0),
+          border: Border.all(color: widget.activePlayer ? Colors.cyanAccent : Colors.white54),
         ),
-        width: widget.width,
+        width: widget.gamePieceWidth,
         child: InkWell(
-          onTap: widget.activePlayer ? () => selectField() : null,
+          onTap: widget.activePlayer ? () => widget.onTap() : null,
           child: Center(
             child: Text(
               widget.gamePiece.symbol,

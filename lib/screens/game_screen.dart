@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '/models/game_model.dart';
-import '/models/field_model.dart';
 import '/models/game_piece_model.dart';
 
 import '/widgets/layouts/game_board.dart';
@@ -16,12 +15,6 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   late Game game;
-  late List<Field> fields;
-  late bool gamePieceSelected;
-  late Map playerOneLevelMap;
-  late Map playerTwoLevelMap;
-  late List<GamePiece> playerOneGamePieces;
-  late List<GamePiece> playerTwoGamePieces;
 
   @override
   void initState() {
@@ -30,67 +23,30 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void startNewGame() {
-    game = Game();
-    // Spieler 1 Werte setzen
-    playerOneGamePieces = List<GamePiece>.filled(6, GamePiece(0, ''), growable: false);
-    playerOneGamePieces[0] = GamePiece(1, 'X');
-    playerOneGamePieces[1] = GamePiece(1, 'X');
-    playerOneGamePieces[2] = GamePiece(3, 'X');
-    playerOneGamePieces[3] = GamePiece(3, 'X');
-    playerOneGamePieces[4] = GamePiece(5, 'X');
-    playerOneGamePieces[5] = GamePiece(5, 'X');
-    playerOneLevelMap = {};
-    for (int i = 0; i < playerOneGamePieces.length; i++) {
-      if (playerOneLevelMap[playerOneGamePieces[i].level] == null) {
-        playerOneLevelMap[playerOneGamePieces[i].level] = 0;
-      }
-      playerOneLevelMap[playerOneGamePieces[i].level]++;
-    }
-    // Spieler 2 Werte setzen
-    playerTwoGamePieces = List<GamePiece>.filled(6, GamePiece(0, ''), growable: false);
-    playerTwoGamePieces[0] = GamePiece(1, 'O');
-    playerTwoGamePieces[1] = GamePiece(1, 'O');
-    playerTwoGamePieces[2] = GamePiece(3, 'O');
-    playerTwoGamePieces[3] = GamePiece(3, 'O');
-    playerTwoGamePieces[4] = GamePiece(5, 'O');
-    playerTwoGamePieces[5] = GamePiece(5, 'O');
-    playerTwoLevelMap = {};
-    for (int i = 0; i < playerTwoGamePieces.length; i++) {
-      if (playerTwoLevelMap[playerTwoGamePieces[i].level] == null) {
-        playerTwoLevelMap[playerTwoGamePieces[i].level] = 0;
-      }
-      playerTwoLevelMap[playerTwoGamePieces[i].level]++;
-    }
-    gamePieceSelected = false;
     setState(() {
-      fields = List<Field>.generate(9, (i) => (Field(i)));
+      game = Game(
+        winSerie: 3,
+        fieldMulti: 3,
+        playerOneGamePieceLevel: [1, 1, 3, 3, 5, 5],
+        playerTwoGamePieceLevel: [1, 1, 3, 3, 5, 5],
+      );
     });
   }
 
   void setField(final int fieldNumber) {
-    for (int i = 0; i < playerOneGamePieces.length; i++) {
-      if (playerOneGamePieces[i].isSelected || playerTwoGamePieces[i].isSelected) {
-        gamePieceSelected = true;
+    for (int i = 0; i < game.playerOneGamePieces.length; i++) {
+      if (game.playerOneGamePieces[i].isSelected || game.playerTwoGamePieces[i].isSelected) {
+        game.gamePieceSelected = true;
         break;
       }
     }
-    if (game.round % 2 == 0) {
-      if (setGamePieceToField(playerOneGamePieces, playerOneLevelMap, fieldNumber)) {
-        if (isGameFinished() == false) {
-          if (gamePieceSelected) {
-            gamePieceSelected = false;
-            game.round++;
-          }
-        }
+    if (game.currentRound % 2 == 0) {
+      if (setGamePieceToField(game.playerOneGamePieces, game.playerOneLevelMap, fieldNumber)) {
+        checkIfGameIsFinished();
       }
     } else {
-      if (setGamePieceToField(playerTwoGamePieces, playerTwoLevelMap, fieldNumber)) {
-        if (isGameFinished() == false) {
-          if (gamePieceSelected) {
-            gamePieceSelected = false;
-            game.round++;
-          }
-        }
+      if (setGamePieceToField(game.playerTwoGamePieces, game.playerTwoLevelMap, fieldNumber)) {
+        checkIfGameIsFinished();
       }
     }
     setState(() {});
@@ -99,10 +55,10 @@ class _GameScreenState extends State<GameScreen> {
   bool setGamePieceToField(List<GamePiece> gamePieceList, Map levelMap, final int fieldNumber) {
     for (int i = 0; i < gamePieceList.length; i++) {
       if (gamePieceList[i].isSelected) {
-        if (levelMap.keys.elementAt(i) > fields[fieldNumber].currentLevel) {
-          fields[fieldNumber].symbol = gamePieceList[i].symbol;
+        if (levelMap.keys.elementAt(i) > game.fields[fieldNumber].currentLevel) {
+          game.fields[fieldNumber].symbol = gamePieceList[i].symbol;
           gamePieceList[i].isSelected = false;
-          fields[fieldNumber].currentLevel = levelMap.keys.elementAt(i);
+          game.fields[fieldNumber].currentLevel = levelMap.keys.elementAt(i);
           levelMap[levelMap.keys.elementAt(i)]--;
           if (levelMap[levelMap.keys.elementAt(i)] == 0) {
             gamePieceList[i].symbol = '';
@@ -114,35 +70,101 @@ class _GameScreenState extends State<GameScreen> {
     return false;
   }
 
+  void checkIfGameIsFinished() {
+    if (isGameFinished() == false) {
+      if (game.gamePieceSelected) {
+        game.gamePieceSelected = false;
+        game.currentRound++;
+      }
+    }
+  }
+
   bool isGameFinished() {
-    if (fields[0].symbol.contains('X') && fields[1].symbol.contains('X') && fields[2].symbol.contains('X') ||
-        fields[0].symbol.contains('O') && fields[1].symbol.contains('O') && fields[2].symbol.contains('O') ||
-        fields[3].symbol.contains('X') && fields[4].symbol.contains('X') && fields[5].symbol.contains('X') ||
-        fields[3].symbol.contains('O') && fields[4].symbol.contains('O') && fields[5].symbol.contains('O') ||
-        fields[6].symbol.contains('X') && fields[7].symbol.contains('X') && fields[8].symbol.contains('X') ||
-        fields[6].symbol.contains('O') && fields[7].symbol.contains('O') && fields[8].symbol.contains('O') ||
-        fields[0].symbol.contains('X') && fields[3].symbol.contains('X') && fields[6].symbol.contains('X') ||
-        fields[0].symbol.contains('O') && fields[3].symbol.contains('O') && fields[6].symbol.contains('O') ||
-        fields[1].symbol.contains('X') && fields[4].symbol.contains('X') && fields[7].symbol.contains('X') ||
-        fields[1].symbol.contains('O') && fields[4].symbol.contains('O') && fields[7].symbol.contains('O') ||
-        fields[2].symbol.contains('X') && fields[5].symbol.contains('X') && fields[8].symbol.contains('X') ||
-        fields[2].symbol.contains('O') && fields[5].symbol.contains('O') && fields[8].symbol.contains('O') ||
-        fields[0].symbol.contains('X') && fields[4].symbol.contains('X') && fields[8].symbol.contains('X') ||
-        fields[0].symbol.contains('O') && fields[4].symbol.contains('O') && fields[8].symbol.contains('O') ||
-        fields[2].symbol.contains('X') && fields[4].symbol.contains('X') && fields[6].symbol.contains('X') ||
-        fields[2].symbol.contains('O') && fields[4].symbol.contains('O') && fields[6].symbol.contains('O')) {
+    int winStreak = 0;
+    int lineNumber = 1;
+    for (int i = 0; i < game.fields.length; i++) {
+      if (game.fields[i].symbol == '') {
+        continue;
+      }
+      winStreak = 0;
+      for (int j = 0; j < game.winSeries; j++) {
+        if (i + j < game.fields.length) {
+          if (j < game.fieldMultiplier * lineNumber && game.fields[i + j].symbol.contains('X')) {
+            winStreak++;
+            if (game.winSeries == winStreak) {
+              game.gameIsFinished = true;
+              game.playerHasWon = true;
+              return true;
+            }
+          }
+        }
+        if (j == game.winSeries) {
+          lineNumber++;
+        }
+      }
+    }
+    // TODO hier weitermachen auf Zeilen Gewinn prüfen.
+    return false;
+    /*if (game.fields[0].symbol.contains('X') &&
+            game.fields[1].symbol.contains('X') &&
+            game.fields[2].symbol.contains('X') ||
+        game.fields[0].symbol.contains('O') &&
+            game.fields[1].symbol.contains('O') &&
+            game.fields[2].symbol.contains('O') ||
+        game.fields[3].symbol.contains('X') &&
+            game.fields[4].symbol.contains('X') &&
+            game.fields[5].symbol.contains('X') ||
+        game.fields[3].symbol.contains('O') &&
+            game.fields[4].symbol.contains('O') &&
+            game.fields[5].symbol.contains('O') ||
+        game.fields[6].symbol.contains('X') &&
+            game.fields[7].symbol.contains('X') &&
+            game.fields[8].symbol.contains('X') ||
+        game.fields[6].symbol.contains('O') &&
+            game.fields[7].symbol.contains('O') &&
+            game.fields[8].symbol.contains('O') ||
+        game.fields[0].symbol.contains('X') &&
+            game.fields[3].symbol.contains('X') &&
+            game.fields[6].symbol.contains('X') ||
+        game.fields[0].symbol.contains('O') &&
+            game.fields[3].symbol.contains('O') &&
+            game.fields[6].symbol.contains('O') ||
+        game.fields[1].symbol.contains('X') &&
+            game.fields[4].symbol.contains('X') &&
+            game.fields[7].symbol.contains('X') ||
+        game.fields[1].symbol.contains('O') &&
+            game.fields[4].symbol.contains('O') &&
+            game.fields[7].symbol.contains('O') ||
+        game.fields[2].symbol.contains('X') &&
+            game.fields[5].symbol.contains('X') &&
+            game.fields[8].symbol.contains('X') ||
+        game.fields[2].symbol.contains('O') &&
+            game.fields[5].symbol.contains('O') &&
+            game.fields[8].symbol.contains('O') ||
+        game.fields[0].symbol.contains('X') &&
+            game.fields[4].symbol.contains('X') &&
+            game.fields[8].symbol.contains('X') ||
+        game.fields[0].symbol.contains('O') &&
+            game.fields[4].symbol.contains('O') &&
+            game.fields[8].symbol.contains('O') ||
+        game.fields[2].symbol.contains('X') &&
+            game.fields[4].symbol.contains('X') &&
+            game.fields[6].symbol.contains('X') ||
+        game.fields[2].symbol.contains('O') &&
+            game.fields[4].symbol.contains('O') &&
+            game.fields[6].symbol.contains('O')) {
       setState(() {
         game.gameIsFinished = true;
         game.playerHasWon = true;
       });
       return true;
-    } else if (game.round == playerOneGamePieces.length + playerTwoGamePieces.length) {
+    } else if (game.currentRound == game.maxRounds) {
       setState(() {
         game.gameIsFinished = true;
       });
       return true;
     }
-    return false;
+    return false;*/
   }
 
   @override
@@ -152,18 +174,18 @@ class _GameScreenState extends State<GameScreen> {
         body: Column(
           children: [
             GamePieceList(
-              gamePieceList: playerOneGamePieces,
-              activePlayer: game.round % 2 == 0,
-              levelMap: playerOneLevelMap,
+              gamePieceList: game.playerOneGamePieces,
+              activePlayer: game.currentRound % 2 == 0,
+              levelMap: game.playerOneLevelMap,
             ),
             GameBoard(
-              fields: fields,
+              game: game,
               onTap: setField,
             ),
             GamePieceList(
-              gamePieceList: playerTwoGamePieces,
-              activePlayer: game.round % 2 == 1,
-              levelMap: playerTwoLevelMap,
+              gamePieceList: game.playerTwoGamePieces,
+              activePlayer: game.currentRound % 2 == 1,
+              levelMap: game.playerTwoLevelMap,
             ),
             game.gameIsFinished
                 ? Column(

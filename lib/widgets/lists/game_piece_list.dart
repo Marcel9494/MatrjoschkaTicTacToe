@@ -20,6 +20,17 @@ class GamePieceList extends StatefulWidget {
 }
 
 class _GamePieceListState extends State<GamePieceList> {
+  void selectField(int fieldNumber) {
+    for (int i = 0; i < widget.gamePieceList.length; i++) {
+      if (widget.gamePieceList[i].isSelected) {
+        widget.gamePieceList[i].isSelected = false;
+      }
+    }
+    setState(() {
+      widget.gamePieceList[fieldNumber].isSelected = !widget.gamePieceList[fieldNumber].isSelected;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -34,13 +45,14 @@ class _GamePieceListState extends State<GamePieceList> {
               children: [
                 Text(
                   widget.levelMap.values.elementAt(i).toString(),
-                  style: const TextStyle(fontSize: 18.0),
+                  style: const TextStyle(fontSize: 24.0),
                 ),
                 GamePieceFieldComponent(
                   gamePiece: widget.gamePieceList[i],
-                  width: MediaQuery.of(context).size.width / widget.levelMap.length,
+                  gamePieceWidth: MediaQuery.of(context).size.width / widget.levelMap.length,
                   activePlayer: widget.activePlayer,
                   levelSize: widget.levelMap.keys.elementAt(i),
+                  onTap: () => selectField(i),
                 ),
               ],
             ),

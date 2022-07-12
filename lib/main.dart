@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:matrjoschka_tictactoe/screens/game_screen.dart';
 
 import '/screens/home_screen.dart';
+import '/screens/game_screen.dart';
+
+import '/utils/constants/route_constants.dart';
 
 void main() {
   runApp(const MatrjoschkaTicTacToe());
@@ -20,9 +22,12 @@ class MatrjoschkaTicTacToe extends StatelessWidget {
     return MaterialApp(
       title: 'Matrjoschka Tic Tac Toe',
       home: const HomeScreen(),
+      theme: ThemeData(
+        brightness: Brightness.dark,
+      ),
       routes: {
-        '/home': (context) => const HomeScreen(),
-        '/game': (context) => const GameScreen(),
+        homeRoute: (context) => const HomeScreen(),
+        gameRoute: (context) => const GameScreen(),
       },
       debugShowCheckedModeBanner: false,
     );

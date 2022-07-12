@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
-import '../../models/field_model.dart';
+import 'dart:math';
+
+import '../../models/game_model.dart';
 
 class GameBoard extends StatelessWidget {
-  final List<Field> fields;
+  final Game game;
   final Function onTap;
 
   const GameBoard({
     Key? key,
-    required this.fields,
+    required this.game,
     required this.onTap,
   }) : super(key: key);
 
@@ -19,20 +21,20 @@ class GameBoard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 2.0),
         child: Center(
           child: GridView.count(
-            crossAxisCount: 3,
+            crossAxisCount: sqrt(game.fields.length).toInt(),
             shrinkWrap: true,
             children: [
-              for (int i = 0; i < fields.length; i++)
+              for (int i = 0; i < game.fields.length; i++)
                 Container(
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black),
+                    border: Border.all(color: Colors.white54),
                   ),
                   child: InkWell(
                     onTap: () => onTap(i),
                     child: Center(
                       child: Text(
-                        fields[i].symbol,
-                        style: TextStyle(fontSize: 12.0 * fields[i].currentLevel),
+                        game.fields[i].symbol,
+                        style: TextStyle(fontSize: 12.0 * game.fields[i].currentLevel),
                       ),
                     ),
                   ),

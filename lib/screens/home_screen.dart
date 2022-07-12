@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../utils/constants/route_constants.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -13,7 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: Center(
         child: ElevatedButton(
-          onPressed: () => Navigator.of(context).pushNamed('/game'),
+          onPressed: () => Navigator.of(context).pushNamed(gameRoute),
           child: const Text('Spieler vs. Spieler'),
         ),
       ),
