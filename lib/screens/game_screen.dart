@@ -25,8 +25,8 @@ class _GameScreenState extends State<GameScreen> {
   void startNewGame() {
     setState(() {
       game = Game(
-        winSerie: 3,
-        fieldMulti: 3,
+        winSerie: 4,
+        fieldMulti: 5,
         playerOneGamePieceLevel: [1, 1, 3, 3, 5, 5],
         playerTwoGamePieceLevel: [1, 1, 3, 3, 5, 5],
       );
@@ -42,11 +42,11 @@ class _GameScreenState extends State<GameScreen> {
     }
     if (game.currentRound % 2 == 0) {
       if (setGamePieceToField(game.playerOneGamePieces, game.playerOneLevelMap, fieldNumber)) {
-        checkIfGameIsFinished();
+        checkIfGameIsFinished('X');
       }
     } else {
       if (setGamePieceToField(game.playerTwoGamePieces, game.playerTwoLevelMap, fieldNumber)) {
-        checkIfGameIsFinished();
+        checkIfGameIsFinished('O');
       }
     }
     setState(() {});
@@ -70,101 +70,90 @@ class _GameScreenState extends State<GameScreen> {
     return false;
   }
 
-  void checkIfGameIsFinished() {
-    if (isGameFinished() == false) {
+  void checkIfGameIsFinished(String checkedSymbol) {
+    if (checkIfPlayerHasWon(checkedSymbol) == false) {
       if (game.gamePieceSelected) {
         game.gamePieceSelected = false;
         game.currentRound++;
       }
     }
+    if (game.currentRound > game.maxRounds) {
+      setState(() {
+        game.gameIsFinished = true;
+      });
+    }
   }
 
-  bool isGameFinished() {
+  bool checkIfPlayerHasWon(String checkedSymbol) {
     int winStreak = 0;
-    int lineNumber = 1;
+    int lineBorder = game.fieldMultiplier;
     for (int i = 0; i < game.fields.length; i++) {
       if (game.fields[i].symbol == '') {
         continue;
       }
+      int line = (i ~/ game.fieldMultiplier) + 1;
+      lineBorder = line * game.fieldMultiplier;
       winStreak = 0;
+      // Prüfe, ob genügend Symbole nebeneinander in einer Reihe sind
       for (int j = 0; j < game.winSeries; j++) {
-        if (i + j < game.fields.length) {
-          if (j < game.fieldMultiplier * lineNumber && game.fields[i + j].symbol.contains('X')) {
-            winStreak++;
-            if (game.winSeries == winStreak) {
-              game.gameIsFinished = true;
-              game.playerHasWon = true;
-              return true;
-            }
+        if (i + j < lineBorder && game.fields[i + j].symbol.contains(checkedSymbol)) {
+          winStreak++;
+          if (game.winSeries == winStreak) {
+            game.gameIsFinished = true;
+            game.playerHasWon = true;
+            return true;
           }
+        } else {
+          break;
         }
-        if (j == game.winSeries) {
-          lineNumber++;
+      }
+      winStreak = 0;
+      // Prüfe, ob genügend Symbole nebeneinander in einer Zeile sind
+      for (int j = 0; j < game.winSeries; j++) {
+        if ((j * game.fieldMultiplier) + i < game.fields.length &&
+            game.fields[(j * game.fieldMultiplier) + i].symbol.contains(checkedSymbol)) {
+          winStreak++;
+          if (game.winSeries == winStreak) {
+            game.gameIsFinished = true;
+            game.playerHasWon = true;
+            return true;
+          }
+        } else {
+          break;
+        }
+      }
+      winStreak = 0;
+      // Prüfe, ob genügend Symbole quer nach rechts sind
+      for (int j = 0; j < game.winSeries; j++) {
+        if ((j * game.fieldMultiplier) + i + j < game.fields.length &&
+            game.fields[(j * game.fieldMultiplier) + i + j].symbol.contains(checkedSymbol)) {
+          winStreak++;
+          if (game.winSeries == winStreak) {
+            game.gameIsFinished = true;
+            game.playerHasWon = true;
+            return true;
+          }
+        } else {
+          break;
+        }
+      }
+      winStreak = 0;
+      // Prüfe, ob genügend Symbole quer nach links sind
+      for (int j = 0; j < game.winSeries; j++) {
+        if ((j * game.fieldMultiplier) + i - j < game.fields.length &&
+            game.fields[(j * game.fieldMultiplier) + i - j].symbol.contains(checkedSymbol)) {
+          winStreak++;
+          if (game.winSeries == winStreak) {
+            game.gameIsFinished = true;
+            game.playerHasWon = true;
+            return true;
+          }
+        } else {
+          break;
         }
       }
     }
-    // TODO hier weitermachen auf Zeilen Gewinn prüfen.
     return false;
-    /*if (game.fields[0].symbol.contains('X') &&
-            game.fields[1].symbol.contains('X') &&
-            game.fields[2].symbol.contains('X') ||
-        game.fields[0].symbol.contains('O') &&
-            game.fields[1].symbol.contains('O') &&
-            game.fields[2].symbol.contains('O') ||
-        game.fields[3].symbol.contains('X') &&
-            game.fields[4].symbol.contains('X') &&
-            game.fields[5].symbol.contains('X') ||
-        game.fields[3].symbol.contains('O') &&
-            game.fields[4].symbol.contains('O') &&
-            game.fields[5].symbol.contains('O') ||
-        game.fields[6].symbol.contains('X') &&
-            game.fields[7].symbol.contains('X') &&
-            game.fields[8].symbol.contains('X') ||
-        game.fields[6].symbol.contains('O') &&
-            game.fields[7].symbol.contains('O') &&
-            game.fields[8].symbol.contains('O') ||
-        game.fields[0].symbol.contains('X') &&
-            game.fields[3].symbol.contains('X') &&
-            game.fields[6].symbol.contains('X') ||
-        game.fields[0].symbol.contains('O') &&
-            game.fields[3].symbol.contains('O') &&
-            game.fields[6].symbol.contains('O') ||
-        game.fields[1].symbol.contains('X') &&
-            game.fields[4].symbol.contains('X') &&
-            game.fields[7].symbol.contains('X') ||
-        game.fields[1].symbol.contains('O') &&
-            game.fields[4].symbol.contains('O') &&
-            game.fields[7].symbol.contains('O') ||
-        game.fields[2].symbol.contains('X') &&
-            game.fields[5].symbol.contains('X') &&
-            game.fields[8].symbol.contains('X') ||
-        game.fields[2].symbol.contains('O') &&
-            game.fields[5].symbol.contains('O') &&
-            game.fields[8].symbol.contains('O') ||
-        game.fields[0].symbol.contains('X') &&
-            game.fields[4].symbol.contains('X') &&
-            game.fields[8].symbol.contains('X') ||
-        game.fields[0].symbol.contains('O') &&
-            game.fields[4].symbol.contains('O') &&
-            game.fields[8].symbol.contains('O') ||
-        game.fields[2].symbol.contains('X') &&
-            game.fields[4].symbol.contains('X') &&
-            game.fields[6].symbol.contains('X') ||
-        game.fields[2].symbol.contains('O') &&
-            game.fields[4].symbol.contains('O') &&
-            game.fields[6].symbol.contains('O')) {
-      setState(() {
-        game.gameIsFinished = true;
-        game.playerHasWon = true;
-      });
-      return true;
-    } else if (game.currentRound == game.maxRounds) {
-      setState(() {
-        game.gameIsFinished = true;
-      });
-      return true;
-    }
-    return false;*/
   }
 
   @override
