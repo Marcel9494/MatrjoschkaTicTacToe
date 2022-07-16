@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:matrjoschka_tictactoe/models/screen_arguments/game_screen_arguments.dart';
 
 import '/screens/home_screen.dart';
+import '/screens/single_player_game_selection_screen.dart';
 import '/screens/game_screen.dart';
 
 import '/utils/constants/route_constants.dart';
@@ -27,7 +29,24 @@ class MatrjoschkaTicTacToe extends StatelessWidget {
       ),
       routes: {
         homeRoute: (context) => const HomeScreen(),
-        gameRoute: (context) => const GameScreen(),
+        singlePlayerGameSelectionRoute: (context) => const SinglePlayerGameSelectionScreen(),
+      },
+      onGenerateRoute: (RouteSettings settings) {
+        switch (settings.name) {
+          case gameRoute:
+            final args = settings.arguments as GameScreenArguments;
+            return MaterialPageRoute<String>(
+              builder: (BuildContext context) => GameScreen(
+                winSerie: args.winSerie,
+                fieldMultiplier: args.fieldMultiplier,
+                playerOneGamePieceLevel: args.playerOneGamePieceLevel,
+                playerTwoGamePieceLevel: args.playerTwoGamePieceLevel,
+              ),
+              settings: settings,
+            );
+          default:
+            return null;
+        }
       },
       debugShowCheckedModeBanner: false,
     );

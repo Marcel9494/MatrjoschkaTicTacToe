@@ -7,7 +7,18 @@ import '/widgets/layouts/game_board.dart';
 import '/widgets/lists/game_piece_list.dart';
 
 class GameScreen extends StatefulWidget {
-  const GameScreen({Key? key}) : super(key: key);
+  final int winSerie;
+  final int fieldMultiplier;
+  final List<int> playerOneGamePieceLevel;
+  final List<int> playerTwoGamePieceLevel;
+
+  const GameScreen({
+    Key? key,
+    required this.winSerie,
+    required this.fieldMultiplier,
+    required this.playerOneGamePieceLevel,
+    required this.playerTwoGamePieceLevel,
+  }) : super(key: key);
 
   @override
   State<GameScreen> createState() => _GameScreenState();
@@ -25,10 +36,10 @@ class _GameScreenState extends State<GameScreen> {
   void startNewGame() {
     setState(() {
       game = Game(
-        winSerie: 4,
-        fieldMulti: 5,
-        playerOneGamePieceLevel: [1, 1, 3, 3, 5, 5],
-        playerTwoGamePieceLevel: [1, 1, 3, 3, 5, 5],
+        winSerie: widget.winSerie,
+        fieldMulti: widget.fieldMultiplier,
+        playerOneGamePieceLevel: widget.playerOneGamePieceLevel,
+        playerTwoGamePieceLevel: widget.playerTwoGamePieceLevel,
       );
     });
   }

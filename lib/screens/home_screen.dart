@@ -15,7 +15,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: Center(
         child: ElevatedButton(
-          onPressed: () => Navigator.of(context).pushNamed(gameRoute),
+          onPressed: () => Navigator.of(context).pushNamed(singlePlayerGameSelectionRoute),
           child: const Text('Spieler vs. Spieler'),
         ),
       ),

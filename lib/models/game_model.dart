@@ -16,8 +16,8 @@ class Game {
   late Map playerTwoLevelMap;
 
   Game({
-    int winSerie = 3,
-    int fieldMulti = 3,
+    required int winSerie,
+    required int fieldMulti,
     required List<int> playerOneGamePieceLevel,
     required List<int> playerTwoGamePieceLevel,
   }) {
