@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:matrjoschka_tictactoe/models/screen_arguments/game_screen_arguments.dart';
 
 import '/screens/home_screen.dart';
 import '/screens/single_player_game_selection_screen.dart';
 import '/screens/game_screen.dart';
+
+import '/models/screen_arguments/game_screen_arguments.dart';
 
 import '/utils/constants/route_constants.dart';
 

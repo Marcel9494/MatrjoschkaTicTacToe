@@ -10,6 +10,8 @@ class Game {
   late int winSeries;
   late int fieldMultiplier;
   late List<Field> fields;
+  late List<int> playerOneGamePieceLevel;
+  late List<int> playerTwoGamePieceLevel;
   late List<GamePiece> playerOneGamePieces;
   late List<GamePiece> playerTwoGamePieces;
   late Map playerOneLevelMap;
@@ -18,8 +20,8 @@ class Game {
   Game({
     required int winSerie,
     required int fieldMulti,
-    required List<int> playerOneGamePieceLevel,
-    required List<int> playerTwoGamePieceLevel,
+    required List<int> playerOneGamePieceLvl,
+    required List<int> playerTwoGamePieceLvl,
   }) {
     gamePieceSelected = false;
     gameIsFinished = false;
@@ -27,7 +29,9 @@ class Game {
     currentRound = 1;
     winSeries = winSerie;
     fieldMultiplier = fieldMulti;
-    fields = List<Field>.generate(fieldMultiplier * fieldMultiplier, (_) => (Field()));
+    playerOneGamePieceLevel = playerOneGamePieceLvl;
+    playerTwoGamePieceLevel = playerTwoGamePieceLvl;
+    fields = List<Field>.generate(fieldMultiplier * fieldMultiplier, ((_) => (Field())));
     // Spieler 1 Werte setzen
     playerOneGamePieces = List<GamePiece>.filled(playerOneGamePieceLevel.length, GamePiece(0, ''), growable: false);
     playerOneLevelMap = {};

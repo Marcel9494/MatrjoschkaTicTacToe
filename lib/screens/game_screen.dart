@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
+import 'dart:math';
+
 import '/models/game_model.dart';
 import '/models/game_piece_model.dart';
 
-import '/widgets/layouts/game_board.dart';
 import '/widgets/lists/game_piece_list.dart';
 
 class GameScreen extends StatefulWidget {
@@ -38,8 +39,8 @@ class _GameScreenState extends State<GameScreen> {
       game = Game(
         winSerie: widget.winSerie,
         fieldMulti: widget.fieldMultiplier,
-        playerOneGamePieceLevel: widget.playerOneGamePieceLevel,
-        playerTwoGamePieceLevel: widget.playerTwoGamePieceLevel,
+        playerOneGamePieceLvl: widget.playerOneGamePieceLevel,
+        playerTwoGamePieceLvl: widget.playerTwoGamePieceLevel,
       );
     });
   }
@@ -60,7 +61,6 @@ class _GameScreenState extends State<GameScreen> {
         checkIfGameIsFinished('O');
       }
     }
-    setState(() {});
   }
 
   bool setGamePieceToField(List<GamePiece> gamePieceList, Map levelMap, final int fieldNumber) {
@@ -84,8 +84,10 @@ class _GameScreenState extends State<GameScreen> {
   void checkIfGameIsFinished(String checkedSymbol) {
     if (checkIfPlayerHasWon(checkedSymbol) == false) {
       if (game.gamePieceSelected) {
-        game.gamePieceSelected = false;
-        game.currentRound++;
+        setState(() {
+          game.gamePieceSelected = false;
+          game.currentRound++;
+        });
       }
     }
     if (game.currentRound > game.maxRounds) {
@@ -93,6 +95,7 @@ class _GameScreenState extends State<GameScreen> {
         game.gameIsFinished = true;
       });
     }
+    setState(() {});
   }
 
   bool checkIfPlayerHasWon(String checkedSymbol) {
@@ -173,28 +176,57 @@ class _GameScreenState extends State<GameScreen> {
       child: Scaffold(
         body: Column(
           children: [
-            GamePieceList(
-              gamePieceList: game.playerOneGamePieces,
-              activePlayer: game.currentRound % 2 == 0,
-              levelMap: game.playerOneLevelMap,
-            ),
-            GameBoard(
-              game: game,
-              onTap: setField,
-            ),
-            GamePieceList(
-              gamePieceList: game.playerTwoGamePieces,
-              activePlayer: game.currentRound % 2 == 1,
-              levelMap: game.playerTwoLevelMap,
-            ),
-            game.gameIsFinished
-                ? Column(
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                child: Center(
+                  child: Column(
                     children: [
-                      game.playerHasWon ? const Text('Gewonnen') : const Text('Unentschieden'),
-                      ElevatedButton(onPressed: () => startNewGame(), child: const Text('Neues Spiel starten'))
+                      GamePieceList(
+                        gamePieceList: game.playerOneGamePieces,
+                        activePlayer: game.currentRound % 2 == 0,
+                        levelMap: game.playerOneLevelMap,
+                      ),
+                      GridView.count(
+                        crossAxisCount: sqrt(game.fields.length).toInt(),
+                        shrinkWrap: true,
+                        children: [
+                          for (int i = 0; i < game.fields.length; i++)
+                            Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.white54),
+                              ),
+                              child: InkWell(
+                                onTap: () => setField(i),
+                                child: Center(
+                                  child: Text(
+                                    game.fields[i].symbol,
+                                    style: TextStyle(fontSize: 12.0 * game.fields[i].currentLevel),
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      GamePieceList(
+                        gamePieceList: game.playerTwoGamePieces,
+                        activePlayer: game.currentRound % 2 == 1,
+                        levelMap: game.playerTwoLevelMap,
+                      ),
+                      game.gameIsFinished
+                          ? Column(
+                              children: [
+                                game.playerHasWon ? const Text('Gewonnen') : const Text('Unentschieden'),
+                                ElevatedButton(
+                                    onPressed: () => startNewGame(), child: const Text('Neues Spiel starten'))
+                              ],
+                            )
+                          : const SizedBox(),
                     ],
-                  )
-                : const SizedBox(),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../utils/constants/route_constants.dart';
+import '/utils/constants/route_constants.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
