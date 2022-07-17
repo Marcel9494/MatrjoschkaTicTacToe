@@ -4,6 +4,8 @@ import 'dart:math';
 
 import 'package:carousel_slider/carousel_slider.dart';
 
+import '/widgets/lists/game_piece_list.dart';
+
 import '/models/game_model.dart';
 import '/models/screen_arguments/game_screen_arguments.dart';
 
@@ -21,8 +23,8 @@ class _SinglePlayerGameSelectionScreenState extends State<SinglePlayerGameSelect
     Game(
       winSerie: 3,
       fieldMulti: 3,
-      playerOneGamePieceLvl: [1, 1, 3, 3, 5, 5],
-      playerTwoGamePieceLvl: [1, 1, 3, 3, 5, 5],
+      playerOneGamePieceLvl: [1, 1, 2, 2, 3, 3],
+      playerTwoGamePieceLvl: [1, 1, 2, 2, 3, 3],
     ),
     Game(
       winSerie: 4,
@@ -60,6 +62,7 @@ class _SinglePlayerGameSelectionScreenState extends State<SinglePlayerGameSelect
         body: Center(
           child: CarouselSlider(
             options: CarouselOptions(
+              height: MediaQuery.of(context).size.height,
               aspectRatio: 1.0,
               enlargeCenterPage: true,
             ),
@@ -77,7 +80,7 @@ class _SinglePlayerGameSelectionScreenState extends State<SinglePlayerGameSelect
                               for (int i = 0; i < gameItem.winSeries; i++)
                                 const Center(
                                   child: Padding(
-                                    padding: EdgeInsets.only(left: 4.0, right: 4.0, bottom: 8.0),
+                                    padding: EdgeInsets.only(left: 4.0, right: 4.0, top: 32.0, bottom: 8.0),
                                     child: Text(
                                       'X',
                                       style: TextStyle(
@@ -104,15 +107,29 @@ class _SinglePlayerGameSelectionScreenState extends State<SinglePlayerGameSelect
                               ],
                             ),
                           ),
-                          Center(
-                            child: Text(
-                              '${gameItem.fieldMultiplier} x ${gameItem.fieldMultiplier}',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 24.0,
-                                fontWeight: FontWeight.bold,
+                          Column(
+                            children: [
+                              Text(
+                                '${gameItem.fieldMultiplier} x ${gameItem.fieldMultiplier}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
+                              GamePieceList(
+                                gamePieceList: gameItem.playerOneGamePieces,
+                                activePlayer: false,
+                                levelMap: gameItem.playerOneLevelMap,
+                                gamePieceWidthOffset: 30,
+                              ),
+                              GamePieceList(
+                                gamePieceList: gameItem.playerTwoGamePieces,
+                                activePlayer: false,
+                                levelMap: gameItem.playerTwoLevelMap,
+                                gamePieceWidthOffset: 30,
+                              ),
+                            ],
                           ),
                         ],
                       ),

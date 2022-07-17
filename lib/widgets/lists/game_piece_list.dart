@@ -7,12 +7,14 @@ class GamePieceList extends StatefulWidget {
   final List<GamePiece> gamePieceList;
   final bool activePlayer;
   final Map levelMap;
+  final int gamePieceWidthOffset;
 
   const GamePieceList({
     Key? key,
     required this.gamePieceList,
     required this.activePlayer,
     required this.levelMap,
+    this.gamePieceWidthOffset = 0,
   }) : super(key: key);
 
   @override
@@ -49,7 +51,8 @@ class _GamePieceListState extends State<GamePieceList> {
                 ),
                 GamePieceFieldComponent(
                   gamePiece: widget.gamePieceList[i],
-                  gamePieceWidth: MediaQuery.of(context).size.width / widget.levelMap.length,
+                  gamePieceWidth:
+                      MediaQuery.of(context).size.width / widget.levelMap.length - widget.gamePieceWidthOffset,
                   activePlayer: widget.activePlayer,
                   levelSize: widget.levelMap.keys.elementAt(i),
                   onTap: () => selectField(i),
