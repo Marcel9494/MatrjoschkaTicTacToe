@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:matrjoschka_tictactoe/models/screen_arguments/single_player_game_selection_screen_arguments.dart';
 
 import '/screens/home_screen.dart';
 import '/screens/single_player_game_selection_screen.dart';
@@ -30,7 +31,6 @@ class MatrjoschkaTicTacToe extends StatelessWidget {
       ),
       routes: {
         homeRoute: (context) => const HomeScreen(),
-        singlePlayerGameSelectionRoute: (context) => const SinglePlayerGameSelectionScreen(),
       },
       onGenerateRoute: (RouteSettings settings) {
         switch (settings.name) {
@@ -42,6 +42,15 @@ class MatrjoschkaTicTacToe extends StatelessWidget {
                 fieldMultiplier: args.fieldMultiplier,
                 playerOneGamePieceLevel: args.playerOneGamePieceLevel,
                 playerTwoGamePieceLevel: args.playerTwoGamePieceLevel,
+                activateArtificialIntelligence: args.activateArtificialIntelligence,
+              ),
+              settings: settings,
+            );
+          case singlePlayerGameSelectionRoute:
+            final args = settings.arguments as SinglePlayerGameSelectionScreenArguments;
+            return MaterialPageRoute<String>(
+              builder: (BuildContext context) => SinglePlayerGameSelectionScreen(
+                activateArtificialIntelligence: args.activateArtificialIntelligence,
               ),
               settings: settings,
             );

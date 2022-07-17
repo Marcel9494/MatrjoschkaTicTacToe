@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'dart:math';
 
+import '/models/field_model.dart';
 import '/models/game_model.dart';
 import '/models/game_piece_model.dart';
 
@@ -12,6 +13,7 @@ class GameScreen extends StatefulWidget {
   final int fieldMultiplier;
   final List<int> playerOneGamePieceLevel;
   final List<int> playerTwoGamePieceLevel;
+  final bool activateArtificialIntelligence;
 
   const GameScreen({
     Key? key,
@@ -19,6 +21,7 @@ class GameScreen extends StatefulWidget {
     required this.fieldMultiplier,
     required this.playerOneGamePieceLevel,
     required this.playerTwoGamePieceLevel,
+    required this.activateArtificialIntelligence,
   }) : super(key: key);
 
   @override
@@ -32,6 +35,9 @@ class _GameScreenState extends State<GameScreen> {
   void initState() {
     super.initState();
     startNewGame();
+    if (widget.activateArtificialIntelligence) {
+      miniMax(game.fields, 1, false);
+    }
   }
 
   void startNewGame() {
@@ -43,6 +49,14 @@ class _GameScreenState extends State<GameScreen> {
         playerTwoGamePieceLvl: widget.playerTwoGamePieceLevel,
       );
     });
+  }
+
+  void miniMax(List<Field> board, int depth, bool isMax) {
+    int score = evaluate(board);
+  }
+
+  int evaluate(List<Field> board) {
+    return 0;
   }
 
   void setField(final int fieldNumber) {

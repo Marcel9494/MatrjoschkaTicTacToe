@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '/models/screen_arguments/single_player_game_selection_screen_arguments.dart';
+
 import '/utils/constants/route_constants.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,11 +15,34 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () => Navigator.of(context).pushNamed(singlePlayerGameSelectionRoute),
-          child: const Text('Spieler vs. Spieler'),
-        ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Center(
+            child: ElevatedButton(
+              onPressed: () => Navigator.pushNamed(
+                context,
+                singlePlayerGameSelectionRoute,
+                arguments: SinglePlayerGameSelectionScreenArguments(
+                  activateArtificialIntelligence: false,
+                ),
+              ),
+              child: const Text('Spieler vs. Spieler'),
+            ),
+          ),
+          Center(
+            child: ElevatedButton(
+              onPressed: () => Navigator.pushNamed(
+                context,
+                singlePlayerGameSelectionRoute,
+                arguments: SinglePlayerGameSelectionScreenArguments(
+                  activateArtificialIntelligence: true,
+                ),
+              ),
+              child: const Text('Spieler vs. Computer'),
+            ),
+          ),
+        ],
       ),
     );
   }

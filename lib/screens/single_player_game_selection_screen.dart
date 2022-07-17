@@ -12,7 +12,12 @@ import '/models/screen_arguments/game_screen_arguments.dart';
 import '/utils/constants/route_constants.dart';
 
 class SinglePlayerGameSelectionScreen extends StatefulWidget {
-  const SinglePlayerGameSelectionScreen({Key? key}) : super(key: key);
+  final bool activateArtificialIntelligence;
+
+  const SinglePlayerGameSelectionScreen({
+    Key? key,
+    required this.activateArtificialIntelligence,
+  }) : super(key: key);
 
   @override
   State<SinglePlayerGameSelectionScreen> createState() => _SinglePlayerGameSelectionScreenState();
@@ -50,6 +55,7 @@ class _SinglePlayerGameSelectionScreenState extends State<SinglePlayerGameSelect
           fieldMultiplier: game.fieldMultiplier,
           playerOneGamePieceLevel: game.playerOneGamePieceLevel,
           playerTwoGamePieceLevel: game.playerTwoGamePieceLevel,
+          activateArtificialIntelligence: widget.activateArtificialIntelligence,
         ),
       );
     });
