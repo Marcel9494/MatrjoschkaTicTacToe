@@ -9,7 +9,7 @@ class Game {
   late int maxRounds;
   late int winSeries;
   late int fieldMultiplier;
-  late List<Field> fields;
+  late List<List<Field>> fields;
   late List<int> playerOneGamePieceLevel;
   late List<int> playerTwoGamePieceLevel;
   late List<GamePiece> playerOneGamePieces;
@@ -31,7 +31,7 @@ class Game {
     fieldMultiplier = fieldMulti;
     playerOneGamePieceLevel = playerOneGamePieceLvl;
     playerTwoGamePieceLevel = playerTwoGamePieceLvl;
-    fields = List<Field>.generate(fieldMultiplier * fieldMultiplier, ((_) => (Field())));
+    fields = List.generate(fieldMulti, (row) => List.generate(fieldMulti, (col) => Field()), growable: false);
     // Spieler 1 Werte setzen
     playerOneGamePieces = List<GamePiece>.filled(playerOneGamePieceLevel.length, GamePiece(0, ''), growable: false);
     playerOneLevelMap = {};

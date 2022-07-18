@@ -38,7 +38,7 @@ class _SinglePlayerGameSelectionScreenState extends State<SinglePlayerGameSelect
       playerTwoGamePieceLvl: [1, 1, 3, 3, 5, 5],
     ),
     Game(
-      winSerie: 7,
+      winSerie: 5,
       fieldMulti: 7,
       playerOneGamePieceLvl: [1, 1, 3, 3, 5, 5],
       playerTwoGamePieceLvl: [1, 1, 3, 3, 5, 5],
@@ -101,15 +101,16 @@ class _SinglePlayerGameSelectionScreenState extends State<SinglePlayerGameSelect
                           ),
                           Expanded(
                             child: GridView.count(
-                              crossAxisCount: sqrt(gameItem.fields.length).toInt(),
+                              crossAxisCount: gameItem.fields.length,
                               shrinkWrap: true,
                               children: [
-                                for (int i = 0; i < gameItem.fields.length; i++)
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.white54),
+                                for (int row = 0; row < gameItem.fields.length; row++)
+                                  for (int col = 0; col < gameItem.fields[0].length; col++)
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.white54),
+                                      ),
                                     ),
-                                  ),
                               ],
                             ),
                           ),

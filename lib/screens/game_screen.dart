@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'dart:math';
-
 import '/models/field_model.dart';
 import '/models/game_model.dart';
 import '/models/game_piece_model.dart';
@@ -35,9 +33,6 @@ class _GameScreenState extends State<GameScreen> {
   void initState() {
     super.initState();
     startNewGame();
-    if (widget.activateArtificialIntelligence) {
-      miniMax(game.fields, 1, false);
-    }
   }
 
   void startNewGame() {
@@ -51,15 +46,179 @@ class _GameScreenState extends State<GameScreen> {
     });
   }
 
-  void miniMax(List<Field> board, int depth, bool isMax) {
+  void miniMax(List<List<Field>> board, int depth, bool isMax) {
     int score = evaluate(board);
+    print('Score: ${score.toString()}');
   }
 
-  int evaluate(List<Field> board) {
+  int evaluate(List<List<Field>> board) {
+    int winStreak = 0;
+    // Prüfe, ob genügend Symbole nebeneinander in einer Reihe sind
+    for (int row = 0; row < game.fieldMultiplier; row++) {
+      for (int col = 0; col < game.fieldMultiplier; col++) {
+        if (board[row][col].symbol.contains('X')) {
+          winStreak++;
+          if (game.winSeries == winStreak) {
+            game.gameIsFinished = true;
+            game.playerHasWon = true;
+            return 10;
+          }
+        } else {
+          winStreak = 0;
+        }
+      }
+    }
+    winStreak = 0;
+    // Prüfe, ob genügend Symbole nebeneinander in einer Zeile sind
+    for (int col = 0; col < game.fieldMultiplier; col++) {
+      for (int row = 0; row < game.fieldMultiplier; row++) {
+        if (board[row][col].symbol.contains('X')) {
+          winStreak++;
+          if (game.winSeries == winStreak) {
+            game.gameIsFinished = true;
+            game.playerHasWon = true;
+            return 10;
+          }
+        } else {
+          winStreak = 0;
+        }
+      }
+    }
+    winStreak = 0;
+    // Prüfe mit Reihe, ob genügend Symbole quer nach rechts unten sind
+    for (int row = 0; row < game.fieldMultiplier; row++) {
+      for (int col = 0; col < game.fieldMultiplier; col++) {
+        if (row + col < game.fieldMultiplier && board[col][col + row].symbol.contains('X')) {
+          winStreak++;
+          if (game.winSeries == winStreak) {
+            game.gameIsFinished = true;
+            game.playerHasWon = true;
+            return 10;
+          }
+        } else {
+          winStreak = 0;
+        }
+      }
+    }
+    winStreak = 0;
+    // Prüfe mit Zeile, ob genügend Symbole quer nach rechts unten sind
+    for (int row = 0; row < game.fieldMultiplier; row++) {
+      for (int col = 0; col < game.fieldMultiplier; col++) {
+        if (row + col < game.fieldMultiplier && board[col + row][col].symbol.contains('X')) {
+          winStreak++;
+          if (game.winSeries == winStreak) {
+            game.gameIsFinished = true;
+            game.playerHasWon = true;
+            return 10;
+          }
+        } else {
+          winStreak = 0;
+        }
+      }
+    }
+    winStreak = 0;
+    // Prüfe mit Reihe, ob genügend Symbole quer nach links unten sind
+    for (int row = 0; row < game.fieldMultiplier; row++) {
+      for (int col = 0; col < game.fieldMultiplier; col++) {
+        if (col - row >= 0 && board[row - col][row + col].symbol.contains('X')) {
+          winStreak++;
+          if (game.winSeries == winStreak) {
+            game.gameIsFinished = true;
+            game.playerHasWon = true;
+            return 10;
+          }
+        } else {
+          winStreak = 0;
+        }
+      }
+    }
+    winStreak = 0;
+    // Prüfe mit Zeile, ob genügend Symbole quer nach links unten sind
+    for (int row = game.fieldMultiplier - 1; row >= 0; row--) {
+      for (int col = game.fieldMultiplier - 1; col >= 0; col--) {
+        if (board[col][col - row].symbol.contains('X')) {
+          winStreak++;
+          if (game.winSeries == winStreak) {
+            game.gameIsFinished = true;
+            game.playerHasWon = true;
+            return 10;
+          }
+        } else {
+          winStreak = 0;
+        }
+      }
+    }
     return 0;
+    /*for (int i = 0; i < game.fields.length; i++) {
+      if (game.fields[i].symbol == '') {
+        continue;
+      }
+      int line = (i ~/ game.fieldMultiplier) + 1;
+      lineBorder = line * game.fieldMultiplier;
+      winStreak = 0;
+      // Prüfe, ob genügend Symbole nebeneinander in einer Reihe sind
+      for (int j = 0; j < game.winSeries; j++) {
+        if (i + j < lineBorder && game.fields[i + j].symbol.contains('X')) {
+          winStreak++;
+          if (game.winSeries == winStreak) {
+            game.gameIsFinished = true;
+            game.playerHasWon = true;
+            return 10;
+          }
+        } else {
+          break;
+        }
+      }
+      winStreak = 0;
+      // Prüfe, ob genügend Symbole nebeneinander in einer Zeile sind
+      for (int j = 0; j < game.winSeries; j++) {
+        if ((j * game.fieldMultiplier) + i < game.fields.length &&
+            game.fields[(j * game.fieldMultiplier) + i].symbol.contains('X')) {
+          winStreak++;
+          if (game.winSeries == winStreak) {
+            game.gameIsFinished = true;
+            game.playerHasWon = true;
+            return 10;
+          }
+        } else {
+          break;
+        }
+      }
+      winStreak = 0;
+      // Prüfe, ob genügend Symbole quer nach rechts sind
+      for (int j = 0; j < game.winSeries; j++) {
+        if ((j * game.fieldMultiplier) + i + j < game.fields.length &&
+            game.fields[(j * game.fieldMultiplier) + i + j].symbol.contains('X')) {
+          winStreak++;
+          if (game.winSeries == winStreak) {
+            game.gameIsFinished = true;
+            game.playerHasWon = true;
+            return 10;
+          }
+        } else {
+          break;
+        }
+      }
+      winStreak = 0;
+      // Prüfe, ob genügend Symbole quer nach links sind
+      for (int j = 0; j < game.winSeries; j++) {
+        if ((j * game.fieldMultiplier) + i - j < game.fields.length &&
+            game.fields[(j * game.fieldMultiplier) + i - j].symbol.contains('X')) {
+          winStreak++;
+          if (game.winSeries == winStreak) {
+            game.gameIsFinished = true;
+            game.playerHasWon = true;
+            return 10;
+          }
+        } else {
+          break;
+        }
+      }
+    }
+    return 0;*/
   }
 
-  void setField(final int fieldNumber) {
+  void setField(final int row, final int col) {
     for (int i = 0; i < game.playerOneGamePieces.length; i++) {
       if (game.playerOneGamePieces[i].isSelected || game.playerTwoGamePieces[i].isSelected) {
         game.gamePieceSelected = true;
@@ -67,23 +226,26 @@ class _GameScreenState extends State<GameScreen> {
       }
     }
     if (game.currentRound % 2 == 0) {
-      if (setGamePieceToField(game.playerOneGamePieces, game.playerOneLevelMap, fieldNumber)) {
+      if (setGamePieceToField(game.playerOneGamePieces, game.playerOneLevelMap, row, col)) {
         checkIfGameIsFinished('X');
       }
     } else {
-      if (setGamePieceToField(game.playerTwoGamePieces, game.playerTwoLevelMap, fieldNumber)) {
+      if (setGamePieceToField(game.playerTwoGamePieces, game.playerTwoLevelMap, row, col)) {
         checkIfGameIsFinished('O');
       }
     }
+    if (widget.activateArtificialIntelligence) {
+      miniMax(game.fields, 1, false);
+    }
   }
 
-  bool setGamePieceToField(List<GamePiece> gamePieceList, Map levelMap, final int fieldNumber) {
+  bool setGamePieceToField(List<GamePiece> gamePieceList, Map levelMap, final int row, final int col) {
     for (int i = 0; i < gamePieceList.length; i++) {
       if (gamePieceList[i].isSelected) {
-        if (levelMap.keys.elementAt(i) > game.fields[fieldNumber].currentLevel) {
-          game.fields[fieldNumber].symbol = gamePieceList[i].symbol;
+        if (levelMap.keys.elementAt(i) > game.fields[row][col].currentLevel) {
+          game.fields[row][col].symbol = gamePieceList[i].symbol;
           gamePieceList[i].isSelected = false;
-          game.fields[fieldNumber].currentLevel = levelMap.keys.elementAt(i);
+          game.fields[row][col].currentLevel = levelMap.keys.elementAt(i);
           levelMap[levelMap.keys.elementAt(i)]--;
           if (levelMap[levelMap.keys.elementAt(i)] == 0) {
             gamePieceList[i].symbol = '';
@@ -116,7 +278,7 @@ class _GameScreenState extends State<GameScreen> {
     int winStreak = 0;
     int lineBorder = game.fieldMultiplier;
     for (int i = 0; i < game.fields.length; i++) {
-      if (game.fields[i].symbol == '') {
+      if (game.fields[i][0].symbol == '') {
         continue;
       }
       int line = (i ~/ game.fieldMultiplier) + 1;
@@ -124,7 +286,7 @@ class _GameScreenState extends State<GameScreen> {
       winStreak = 0;
       // Prüfe, ob genügend Symbole nebeneinander in einer Reihe sind
       for (int j = 0; j < game.winSeries; j++) {
-        if (i + j < lineBorder && game.fields[i + j].symbol.contains(checkedSymbol)) {
+        if (i + j < lineBorder && game.fields[i + j][0].symbol.contains(checkedSymbol)) {
           winStreak++;
           if (game.winSeries == winStreak) {
             game.gameIsFinished = true;
@@ -139,7 +301,7 @@ class _GameScreenState extends State<GameScreen> {
       // Prüfe, ob genügend Symbole nebeneinander in einer Zeile sind
       for (int j = 0; j < game.winSeries; j++) {
         if ((j * game.fieldMultiplier) + i < game.fields.length &&
-            game.fields[(j * game.fieldMultiplier) + i].symbol.contains(checkedSymbol)) {
+            game.fields[(j * game.fieldMultiplier) + i][0].symbol.contains(checkedSymbol)) {
           winStreak++;
           if (game.winSeries == winStreak) {
             game.gameIsFinished = true;
@@ -154,7 +316,7 @@ class _GameScreenState extends State<GameScreen> {
       // Prüfe, ob genügend Symbole quer nach rechts sind
       for (int j = 0; j < game.winSeries; j++) {
         if ((j * game.fieldMultiplier) + i + j < game.fields.length &&
-            game.fields[(j * game.fieldMultiplier) + i + j].symbol.contains(checkedSymbol)) {
+            game.fields[(j * game.fieldMultiplier) + i + j][0].symbol.contains(checkedSymbol)) {
           winStreak++;
           if (game.winSeries == winStreak) {
             game.gameIsFinished = true;
@@ -169,7 +331,7 @@ class _GameScreenState extends State<GameScreen> {
       // Prüfe, ob genügend Symbole quer nach links sind
       for (int j = 0; j < game.winSeries; j++) {
         if ((j * game.fieldMultiplier) + i - j < game.fields.length &&
-            game.fields[(j * game.fieldMultiplier) + i - j].symbol.contains(checkedSymbol)) {
+            game.fields[(j * game.fieldMultiplier) + i - j][0].symbol.contains(checkedSymbol)) {
           winStreak++;
           if (game.winSeries == winStreak) {
             game.gameIsFinished = true;
@@ -202,24 +364,25 @@ class _GameScreenState extends State<GameScreen> {
                         levelMap: game.playerOneLevelMap,
                       ),
                       GridView.count(
-                        crossAxisCount: sqrt(game.fields.length).toInt(),
+                        crossAxisCount: game.fields.length,
                         shrinkWrap: true,
                         children: [
-                          for (int i = 0; i < game.fields.length; i++)
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.white54),
-                              ),
-                              child: InkWell(
-                                onTap: () => setField(i),
-                                child: Center(
-                                  child: Text(
-                                    game.fields[i].symbol,
-                                    style: TextStyle(fontSize: 12.0 * game.fields[i].currentLevel),
+                          for (int row = 0; row < game.fields.length; row++)
+                            for (int col = 0; col < game.fields[0].length; col++)
+                              Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.white54),
+                                ),
+                                child: InkWell(
+                                  onTap: () => setField(row, col),
+                                  child: Center(
+                                    child: Text(
+                                      game.fields[row][col].symbol,
+                                      style: TextStyle(fontSize: 12.0 * game.fields[row][col].currentLevel),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
                         ],
                       ),
                       GamePieceList(
