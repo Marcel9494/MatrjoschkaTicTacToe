@@ -59,6 +59,7 @@ class _GameScreenState extends State<GameScreen> {
         if (board[row][col].symbol.contains('X')) {
           winStreak++;
           if (game.winSeries == winStreak) {
+            print('Reihe');
             game.gameIsFinished = true;
             game.playerHasWon = true;
             return 10;
@@ -75,6 +76,7 @@ class _GameScreenState extends State<GameScreen> {
         if (board[row][col].symbol.contains('X')) {
           winStreak++;
           if (game.winSeries == winStreak) {
+            print('Zeile');
             game.gameIsFinished = true;
             game.playerHasWon = true;
             return 10;
@@ -120,7 +122,7 @@ class _GameScreenState extends State<GameScreen> {
     // Prüfe mit Reihe, ob genügend Symbole quer nach links unten sind
     for (int row = 0; row < game.fieldMultiplier; row++) {
       for (int col = 0; col < game.fieldMultiplier; col++) {
-        if (col - row >= 0 && board[row - col][row + col].symbol.contains('X')) {
+        if (row - col >= 0 && board[row - col][col].symbol.contains('X')) {
           winStreak++;
           if (game.winSeries == winStreak) {
             game.gameIsFinished = true;
@@ -133,89 +135,23 @@ class _GameScreenState extends State<GameScreen> {
       }
     }
     winStreak = 0;
-    // Prüfe mit Zeile, ob genügend Symbole quer nach links unten sind
-    for (int row = game.fieldMultiplier - 1; row >= 0; row--) {
-      for (int col = game.fieldMultiplier - 1; col >= 0; col--) {
-        if (board[col][col - row].symbol.contains('X')) {
-          winStreak++;
-          if (game.winSeries == winStreak) {
-            game.gameIsFinished = true;
-            game.playerHasWon = true;
-            return 10;
+    for (int row = 0; row < game.fieldMultiplier; row++) {
+      for (int col = 0; col < game.fieldMultiplier; col++) {
+        for (int i = 0; i < game.winSeries; i++) {
+          if (row + i < game.fieldMultiplier && col - i >= 0 && board[row + i][col - i].symbol.contains('X')) {
+            winStreak++;
+            if (game.winSeries == winStreak) {
+              game.gameIsFinished = true;
+              game.playerHasWon = true;
+              return 10;
+            }
+          } else {
+            winStreak = 0;
           }
-        } else {
-          winStreak = 0;
         }
       }
     }
     return 0;
-    /*for (int i = 0; i < game.fields.length; i++) {
-      if (game.fields[i].symbol == '') {
-        continue;
-      }
-      int line = (i ~/ game.fieldMultiplier) + 1;
-      lineBorder = line * game.fieldMultiplier;
-      winStreak = 0;
-      // Prüfe, ob genügend Symbole nebeneinander in einer Reihe sind
-      for (int j = 0; j < game.winSeries; j++) {
-        if (i + j < lineBorder && game.fields[i + j].symbol.contains('X')) {
-          winStreak++;
-          if (game.winSeries == winStreak) {
-            game.gameIsFinished = true;
-            game.playerHasWon = true;
-            return 10;
-          }
-        } else {
-          break;
-        }
-      }
-      winStreak = 0;
-      // Prüfe, ob genügend Symbole nebeneinander in einer Zeile sind
-      for (int j = 0; j < game.winSeries; j++) {
-        if ((j * game.fieldMultiplier) + i < game.fields.length &&
-            game.fields[(j * game.fieldMultiplier) + i].symbol.contains('X')) {
-          winStreak++;
-          if (game.winSeries == winStreak) {
-            game.gameIsFinished = true;
-            game.playerHasWon = true;
-            return 10;
-          }
-        } else {
-          break;
-        }
-      }
-      winStreak = 0;
-      // Prüfe, ob genügend Symbole quer nach rechts sind
-      for (int j = 0; j < game.winSeries; j++) {
-        if ((j * game.fieldMultiplier) + i + j < game.fields.length &&
-            game.fields[(j * game.fieldMultiplier) + i + j].symbol.contains('X')) {
-          winStreak++;
-          if (game.winSeries == winStreak) {
-            game.gameIsFinished = true;
-            game.playerHasWon = true;
-            return 10;
-          }
-        } else {
-          break;
-        }
-      }
-      winStreak = 0;
-      // Prüfe, ob genügend Symbole quer nach links sind
-      for (int j = 0; j < game.winSeries; j++) {
-        if ((j * game.fieldMultiplier) + i - j < game.fields.length &&
-            game.fields[(j * game.fieldMultiplier) + i - j].symbol.contains('X')) {
-          winStreak++;
-          if (game.winSeries == winStreak) {
-            game.gameIsFinished = true;
-            game.playerHasWon = true;
-            return 10;
-          }
-        } else {
-          break;
-        }
-      }
-    }
-    return 0;*/
   }
 
   void setField(final int row, final int col) {
